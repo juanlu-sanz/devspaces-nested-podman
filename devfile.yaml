@@ -14,8 +14,9 @@ components:
           privileged: true
     container:
       image: ghcr.io/juanlu-sanz/nested-podman-devspaces:latest
-      memoryLimit: 6Gi
-      cpuLimit: 2000m
+      memoryLimit: 4Gi
+      cpuLimit: 1000m
+      cpuRequest: 500m
       mountSources: true
       env:
         - name: SHELL
