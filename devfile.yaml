@@ -28,37 +28,8 @@ components:
           value: "false"
         - name: PY_COLORS
           value: "1"
-      volumeMounts:
-        - name: workspace-storage
-          path: /home/user/.local
-  - name: workspace-storage
-    volume:
-      size: 10Gi
 
 commands:
-  - id: configure-podman
-    exec:
-      component: dev-tools
-      commandLine: |
-        if ! whoami &>/dev/null 2>&1; then
-          if [ -w /etc/passwd ]; then
-            echo "user:x:$(id -u):0:user:/home/user:/bin/bash" >> /etc/passwd
-          fi
-        fi
-        USER_NAME=$(whoami 2>/dev/null || echo user)
-        START_ID=$(( $(id -u) + 1 ))
-        echo "${USER_NAME}:${START_ID}:2147483646" > /etc/subuid 2>/dev/null || true
-        echo "${USER_NAME}:${START_ID}:2147483646" > /etc/subgid 2>/dev/null || true
-        mkdir -p ${HOME}/.config/containers
-        echo 'unqualified-search-registries = ["registry.access.redhat.com", "registry.redhat.io", "docker.io"]' > ${HOME}/.config/containers/registries.conf
-        echo 'short-name-mode = "permissive"' >> ${HOME}/.config/containers/registries.conf
-        echo "Podman configured for user ${USER_NAME} (UID $(id -u))"
-      workingDir: /
-      label: "Configure Podman"
-      group:
-        kind: build
-        isDefault: true
-
   - id: molecule-test
     exec:
       component: dev-tools
@@ -68,7 +39,3 @@ commands:
       group:
         kind: test
         isDefault: true
-
-events:
-  postStart:
-    - configure-podman
