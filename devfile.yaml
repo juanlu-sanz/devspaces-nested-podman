@@ -20,6 +20,8 @@ components:
       env:
         - name: SHELL
           value: "/bin/bash"
+        - name: CONTAINER_HOST
+          value: ""
         - name: ANSIBLE_FORCE_COLOR
           value: "true"
         - name: MOLECULE_NO_LOG
@@ -34,19 +36,12 @@ components:
       size: 10Gi
 
 commands:
-  - id: setup-molecule
+  - id: molecule-test
     exec:
       component: dev-tools
-      commandLine: |
-        unset CONTAINER_HOST &&
-        pip install --user ansible-core molecule "molecule-plugins[podman]" ansible-lint pytest-testinfra &&
-        echo "=== Molecule environment ready ==="
+      commandLine: molecule test
       workingDir: ${PROJECT_SOURCE}
-      label: "Setup Molecule Environment"
+      label: "Run Molecule Test"
       group:
-        kind: build
+        kind: test
         isDefault: true
-
-events:
-  postStart:
-    - setup-molecule
